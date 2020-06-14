@@ -7,6 +7,16 @@ import { GetFilesArgs, FileInfo } from './types.ts';
 
 const isStr = (opts: any): boolean => typeof opts === 'string';
 
+// exists directory or file
+export const exists = async (filename: string) => {
+  try {
+    await Deno.stat(filename);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
 /**
  * findFile
  * @param path - file path
@@ -34,7 +44,7 @@ export const findFile = (path: string, collect: FileInfo[], exclude: string[] = 
           if (new RegExp(`${reg}$`).test(item.name) || _path2 === _path) flag = true;
         })
       }
-      if (!flag) collect.push({
+      !flag && collect.push({
         path: _path,
         filename: item.name,
         isFile: item.isFile,

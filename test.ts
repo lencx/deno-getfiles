@@ -1,5 +1,5 @@
 import { assertEquals } from "https://deno.land/std/testing/asserts.ts";
-import getFiles from './mod.ts';
+import getFiles, { exists } from './mod.ts';
 
 Deno.test('simple', () => {
   const files = getFiles('./examples').map(i => i.path);
@@ -19,7 +19,7 @@ Deno.test('exclude', () => {
     ignore: ['*.ts'],
   }).map(i => i.path);
 
-  const oFiles = ['LICENSE', 'README.md'];
+  const oFiles = ['LICENSE', 'README.md', '.gitignore'];
 
   try {
     assertEquals(files.sort(), oFiles.sort());
@@ -42,4 +42,9 @@ Deno.test('include & ignore', () => {
   } catch (e) {
     console.error(e);
   }
+})
+
+Deno.test('exists', async () => {
+  const isExists = await exists('mod.ts');
+  assertEquals(isExists, true);
 })

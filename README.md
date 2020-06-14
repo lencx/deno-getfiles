@@ -7,7 +7,7 @@
 > needs --allow-read privilege
 
 ```ts
-import getFiles from "https://deno.land/x/getfiles/mod.ts";
+import getFiles, { exists } from "https://deno.land/x/getfiles/mod.ts";
 
 // root path: './' or '.'
 const files = getFiles('./');
@@ -25,9 +25,19 @@ const files3 = getFiles({
   exclude: ['.git'],
   // ignore: ['*.ts'],
 });
+
+const existFile = await exists('mod.ts');
+console.log(existFile);
 ```
 
+## Method
+
+* getFiles
+* exists
+
 ## API
+
+> getFiles
 
 | Option  | Type     | Description       | Example                                                    |
 | ------- | -------- | ----------------- | ---------------------------------------------------------- |
@@ -41,3 +51,4 @@ const files3 = getFiles({
 * [tree](./examples/tree.ts)
 * [include](./examples/include.ts)
 * [exclude](./examples/exclude.ts)
+* [cmd](https://github.com/lencx/deno-example/blob/master/cmd.ts)
