@@ -1,8 +1,9 @@
 /**
  * @author: lencx
- * @create_at: Jun 14, 2020
+ * @create_at: Jun 17, 2020
  */
 
+import { fmtFilesize } from './utils.ts';
 import { GetFilesOptions, FindFileOptions, FileInfo } from './types.ts';
 
 const isStr = (arg: any): boolean => typeof arg === 'string';
@@ -62,13 +63,21 @@ export async function findFile({ path, collect, exclude, ignore, hasInfo }: Find
       });
     } else {
       // collect files according to rules
+      let fileInfo = null;
+      if (hasInfo) {
+        const info = Deno.statSync(_path);
+        fileInfo = {
+          ...info,
+          fmtSize: fmtFilesize(info.size),
+        }
+      }
       collect.push({
         path: _path,
         name: item.name,
         // https://stackoverflow.com/questions/190852/how-can-i-get-file-extensions-with-javascript
         ext: item.name.slice((item.name.lastIndexOf('.') - 1 >>> 0) + 2),
         realPath: Deno.realPathSync(_path),
-        info: hasInfo ? Deno.statSync(_path) : null,
+        info: fileInfo,
       });
     }
   }
