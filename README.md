@@ -30,9 +30,9 @@ const existFile = await exists('mod.ts');
 console.log(existFile);
 ```
 
-## Method
+## Methods
 
-* getFiles
+* getFiles(default export)
 * exists
 
 ## API
@@ -52,3 +52,8 @@ console.log(existFile);
 * [include](./examples/include.ts)
 * [exclude](./examples/exclude.ts)
 * [cmd](https://github.com/lencx/deno-example/blob/master/cmd.ts)
+
+## TODO
+
+- [ ] exclude subpath
+- [ ] file info

@@ -3,9 +3,10 @@
  * @create_at: Jun 14, 2020
  */
 
-import { GetFilesArgs, FileInfo } from './types.ts';
+import { GetFilesOptions, FindFileOptions, FileInfo } from './types.ts';
 
-const isStr = (opts: any): boolean => typeof opts === 'string';
+const isStr = (arg: any): boolean => typeof arg === 'string';
+const encoder = new TextEncoder();
 
 // exists directory or file
 export const exists = async (filename: string) => {
@@ -17,68 +18,63 @@ export const exists = async (filename: string) => {
   }
 }
 
-/**
- * findFile
- * @param path - file path
- * @param collect - collect files found
- * @param exclude - exclude directory
- * @param ignore - ignore file extension or file
- */
-export const findFile = (path: string, collect: FileInfo[], exclude: string[] = [], ignore: string[] = []) => {
-  const rs = Deno.readDirSync(path);
-  if (/\/$/.test(path)) path = path.slice(0, -1);
-  for (const item of rs) {
-    if (exclude.includes(item.name)) return;
-    if (item.isDirectory) {
-      findFile(`${path}/${item.name}`, collect, [], ignore)
-    } else {
-      let _path = `${path}/${item.name}`;
-      if (/^\.\//.test(_path)) _path = _path.slice(2);
+export async function findFile({ path, collect, exclude, ignore }: FindFileOptions) {
+  let rs;
+  try {
+    rs = Deno.readDirSync(path);
+  } catch (e) {
+    await Deno.stderr.write(encoder.encode('NotFound: No such file or directory\n'))
+    Deno.exit(-1);
+  }
 
-      // ignore extension or file
-      let flag = false;
-      if (ignore.length > 0) {
-        ignore.forEach(i => {
-          const reg = i.replace('*.', "\\/\*\\.");
-          const _path2 = /^\.\//.test(reg) ? reg.slice(2) : reg;
-          if (new RegExp(`${reg}$`).test(item.name) || _path2 === _path) flag = true;
-        })
-      }
-      !flag && collect.push({
+  // example: './a/b/' => './a/b'
+  if (/\/$/.test(path)) path = path.slice(0, -1);
+  // example: './a/b' => 'a/b'
+  if (/^\.\//.test(path)) path = path.slice(2);
+
+  if (exclude && exclude.includes(path)) return;
+
+  for (const item of rs) {
+    let _path = `${path}/${item.name}`;
+    if (item.isDirectory) {
+      // recursively directory
+      findFile({
         path: _path,
-        filename: item.name,
-        isFile: item.isFile,
-        isDirectory: item.isDirectory,
-        isSymlink: item.isSymlink,
-      })
+        collect,
+        exclude,
+        ignore,
+      });
+    } else {
+      // collect files according to rules
+      collect.push(item);
     }
   }
 }
 
-export const getFiles = <T extends (string | GetFilesArgs)>(opts: T): FileInfo[] => {
+export function getFiles<T extends (string | GetFilesOptions)>(opts: T) {
   const files: FileInfo[] = [];
 
   if (isStr(opts)) {
-    findFile((opts as string), files)
+    findFile({ path: (opts as string), collect: files });
   } else {
-    const { dir, include = [], exclude = [], ignore = [] } = (opts as GetFilesArgs);
+    // there are multiple parameters
+    const { root, include, exclude, ignore } = (opts as GetFilesOptions);
 
-    // all files
-    if (include.length > 0 && exclude.length > 0) {
-      findFile(dir, files)
+    if (root && include === undefined) {
+      findFile({ path: root, collect: files, exclude, ignore });
     }
 
-    // inclued directory
-    if (include.length > 0) {
-      include.map((path: string) => findFile(path, files, [], ignore))
+    if (include && include.length === 0) return;
+
+    if (include) {
+      include.forEach(dir => findFile({ path: dir, collect: files, exclude, ignore }))
     }
 
-    // exclude directory
-    // ignore extension or file
-    if (include.length === 0 && (exclude.length > 0 || ignore.length > 0)) {
-      findFile(dir, files, exclude, ignore)
+    if (ignore && ignore.length) {
+      // TODO:
     }
   }
+  // console.log(files);
   return files;
 }
 
