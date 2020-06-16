@@ -6,8 +6,9 @@ Deno.test('simple', () => {
 
   const files = getFiles({
     root: '.',
+    // hasInfo: true,
     // include: ['examples'],
-    exclude: ['.git', 'examples/testfile'],
+    exclude: ['.git', 'examples/testfile', 'xx'],
   })
   console.log(files);
 })

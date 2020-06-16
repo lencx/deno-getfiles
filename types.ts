@@ -10,7 +10,7 @@ export interface GetFilesOptions {
   exclude?: string[]; // subpath
   ignore?: string[];
   // type?: 'file' | 'dir'; // default: file
-  hasInfo?: boolean;
+  hasInfo?: boolean; // default: false
 }
 
 export interface FindFileOptions {
@@ -18,6 +18,7 @@ export interface FindFileOptions {
   collect: any[];
   exclude?: string[];
   ignore?: string[];
+  hasInfo?: boolean;
 }
 
 export interface FileInfoDetail {
@@ -41,8 +42,12 @@ export interface FileInfoDetail {
 
 export interface FileInfo {
   path: string;
+  // file name
+  name: string;
+  // file extension
+  ext: string;
   // current working directory
-  cwd: string;
-  filename: string;
-  info: FileInfoDetail;
+  realPath: string;
+  // file info
+  info?: FileInfoDetail;
 }
