@@ -1,0 +1,20 @@
+name: getfiles-ci
+
+on: [push, pull_request]
+
+jobs:
+  getfiles:
+    name: ${{ matrix.kind }} ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Deno
+        uses: denolib/setup-deno@master
+        with:
+          deno-version: 1.0.5
+      - name: Run tests
+        run: deno test --allow-read
