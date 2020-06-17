@@ -5,41 +5,29 @@ Deno.test('simple', () => {
   const files = getFiles('./examples').map(i => i.path);
   const oFiles = ['examples/include.ts', 'examples/exclude.ts', 'examples/testfile/1.txt', 'examples/tree.ts'];
 
-  try {
-    assertEquals(files.sort(), oFiles.sort());
-  } catch (e) {
-    console.error(e);
-  }
+  assertEquals(files.sort(), oFiles.sort());
 })
 
 Deno.test('exclude & ignore', () => {
   const files = getFiles({
     root: '.',
-    exclude: ['.git', './examples'],
+    exclude: ['.git', '.github', './examples'],
     ignore: ['*.ts']
   }).map(i => i.path);
   const oFiles = ['.vscode/settings.json', '.gitignore', 'README.md', 'LICENSE'];
 
-  try {
-    assertEquals(files.sort(), oFiles.sort());
-  } catch (e) {
-    console.error(e);
-  }
+  assertEquals(files.sort(), oFiles.sort());
 })
 
 Deno.test('exclude & ignore', () => {
   const files = getFiles({
     root: '.',
-    exclude: ['.git', './examples'],
+    exclude: ['.git', '.github', './examples'],
     ignore: ['*.ts']
   }).map(i => i.path);
   const oFiles = ['.vscode/settings.json', '.gitignore', 'README.md', 'LICENSE'];
 
-  try {
-    assertEquals(files.sort(), oFiles.sort());
-  } catch (e) {
-    console.error(e);
-  }
+  assertEquals(files.sort(), oFiles.sort());
 })
 
 Deno.test('file info', () => {
@@ -49,11 +37,7 @@ Deno.test('file info', () => {
   }).map((i: any) => Object.keys(i.info));
   const hasFileInfo = ['isFile', 'isSymlink', 'atime', 'mtime', 'birthtime', 'size', 'fmtSize'];
 
-  try {
-    assertArrayContains(files[0], hasFileInfo);
-  } catch (e) {
-    console.error(e);
-  }
+  assertArrayContains(files[0], hasFileInfo);
 })
 
 Deno.test('include & exclude & ignore', () => {
@@ -65,11 +49,7 @@ Deno.test('include & exclude & ignore', () => {
   }).map(i => i.path);
   const oFiles: any = [];
 
-  try {
-    assertEquals(files.sort(), oFiles.sort());
-  } catch (e) {
-    console.error(e);
-  }
+  assertEquals(files.sort(), oFiles.sort());
 })
 
 Deno.test('include & exclude', () => {
@@ -80,11 +60,7 @@ Deno.test('include & exclude', () => {
   }).map(i => i.path);
   const oFiles = ['examples/testfile/1.txt'];
 
-  try {
-    assertEquals(files.sort(), oFiles.sort());
-  } catch (e) {
-    console.error(e);
-  }
+  assertEquals(files.sort(), oFiles.sort());
 })
 
 Deno.test('fmtFileSize', async () => {

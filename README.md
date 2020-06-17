@@ -2,6 +2,11 @@
 
 > Recursively get all files in a directory
 
+[![getfiles ci](https://github.com/lencx/deno-getfiles/workflows/getfiles-ci/badge.svg)](https://github.com/lencx/deno-getfiles/actions)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/lencx/deno-getfiles)
+[![license](https://img.shields.io/github/license/lencx/deno-getfiles)](https://github.com/lencx/deno-getfiles/blob/master/LICENSE)
+[![Made by lencx](https://img.shields.io/badge/Made%20by%20-lencx-inactive)](https://github.com/lencx)
+
 ## Usage
 
 > needs --allow-read privilege
