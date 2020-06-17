@@ -7,8 +7,9 @@
 import getFiles from '../mod.ts';
 
 const files = getFiles({
-  dir: '.',
+  root: '.',
   include: ['examples'],
+  ignore: ['examples/include.ts'],
 });
 
 const _files = files.map(i => i.path).join('\n');

@@ -7,10 +7,10 @@ export interface GetFilesOptions {
   // root directory
   root: string;
   include?: string[];
-  exclude?: string[]; // subpath
+  exclude?: string[];
   ignore?: string[];
-  // type?: 'file' | 'dir'; // default: file
-  hasInfo?: boolean; // default: false
+  // default: false
+  hasInfo?: boolean;
 }
 
 export interface FindFileOptions {
@@ -19,6 +19,7 @@ export interface FindFileOptions {
   exclude?: string[];
   ignore?: string[];
   hasInfo?: boolean;
+  isFirst?: boolean;
 }
 
 export interface FileInfoDetail {

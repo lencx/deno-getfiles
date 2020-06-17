@@ -7,44 +7,52 @@
 > needs --allow-read privilege
 
 ```ts
-import getFiles, { exists } from "https://deno.land/x/getfiles/mod.ts";
+import getFiles, { exists, fileExt, trimPath, fmtFileSize } from "https://deno.land/x/getfiles/mod.ts";
 
 // root path: './' or '.'
 const files = getFiles('./');
 
 // include files
 const files2 = getFiles({
-  dir: './',
+  root: './',
   include: ['examples'],
+  hasInfo: true,
   // ignore: ['examples/include.ts'],
 });
 
 // exclude files
 const files3 = getFiles({
-  dir: './',
+  root: './',
   exclude: ['.git'],
   // ignore: ['*.ts'],
 });
 
+// if a file exists
 const existFile = await exists('mod.ts');
 console.log(existFile);
 ```
 
 ## Methods
 
-* getFiles(default export)
-* exists
+* [fs] - `getFiles`: default export
+* [fs] - `findFile`
+* [utils] - `exists`
+* [utils] - `fileExt`: get file extensions
+* [utils] - `trimPath`: trim path
+* [utils] - `fmtFileSize`: converting file size in bytes to human readable string
+* [utils] - `isStr`
 
 ## API
 
 > getFiles
 
-| Option  | Type     | Description       | Example                                                    |
-| ------- | -------- | ----------------- | ---------------------------------------------------------- |
-| dir     | string   | directory         | {dir: '.'}                                                 |
-| include | string[] | include directory | {dir: '.', include: ['examples']}                          |
-| exclude | string[] | exclude directory | {dir: '.', exclude: ['.git']}                              |
-| ignore  | string[] | ignore file rule  | {dir: '.', ignore: ['\*.ts', '\*.md', 'examples/tree.ts']} |
+| Option  | Type     | Description                   | Example                                                          |
+| ------- | -------- | ----------------------------- | ---------------------------------------------------------------- |
+| root    | string   | directory                     | {root: '.'}                                                      |
+| include | string[] | include directory             | {root: '.', include: ['examples']}                               |
+| exclude | string[] | exclude directory             | {root: '.', exclude: ['.git']}                                   |
+| ignore  | string[] | ignore file rule              | {root: '.', ignore: ['\*.md', '\*\*/\*.ts', 'examples/tree.ts']} |
+| hasInfo | boolean  | file details, default `false` | {root: '.', hasInfo: true}                                       |
 
 ## Examples
 
@@ -52,8 +60,3 @@ console.log(existFile);
 * [include](./examples/include.ts)
 * [exclude](./examples/exclude.ts)
 * [cmd](https://github.com/lencx/deno-example/blob/master/cmd.ts)
-
-## TODO
-
-- [ ] exclude subpath
-- [ ] file info
