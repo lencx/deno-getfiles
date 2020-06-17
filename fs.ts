@@ -3,31 +3,12 @@
  * @create_at: Jun 17, 2020
  */
 
-import { fmtFilesize } from './utils.ts';
+import { fmtFileSize, trimPath, fileExt, isStr } from './utils.ts';
 import { GetFilesOptions, FindFileOptions, FileInfo } from './types.ts';
 
-const isStr = (arg: any): boolean => typeof arg === 'string';
 const encoder = new TextEncoder();
 
-// exists directory or file
-export const exists = async (filename: string): Promise<boolean> => {
-  try {
-    await Deno.stat(filename);
-    return true;
-  } catch (e) {
-    return false;
-  }
-}
-
-export const trimPath = (path: string): string => {
-  // example: './a/b/' => './a/b'
-  if (/\/$/.test(path)) path = path.slice(0, -1);
-  // example: './a/b' => 'a/b'
-  if (/^\.\//.test(path)) path = path.slice(2);
-  return path;
-}
-
-export async function findFile({ path, collect, exclude, ignore, hasInfo }: FindFileOptions): Promise<void> {
+export async function findFile({ path, collect, exclude, ignore, hasInfo, isFirst }: FindFileOptions): Promise<void> {
   let rs;
   try {
     rs = Deno.readDirSync(path);
@@ -38,7 +19,7 @@ export async function findFile({ path, collect, exclude, ignore, hasInfo }: Find
 
   path = trimPath(path);
 
-  if (exclude) {
+  if (exclude && exclude.length) {
     let flag = false;
     exclude.some(i => {
       if (trimPath(i) === path) {
@@ -54,28 +35,38 @@ export async function findFile({ path, collect, exclude, ignore, hasInfo }: Find
     _path = trimPath(_path);
     if (item.isDirectory) {
       // recursively directory
-      findFile({
-        path: _path,
-        collect,
-        exclude,
-        ignore,
-        hasInfo,
-      });
+      findFile({ path: _path, collect, exclude, ignore, hasInfo, isFirst: false });
     } else {
+      const fExt = fileExt(item.name);
+
+      //=== ignore rules
+      // `**/*.ts`: recursive directory ignores files
+      // `*.ts` : ignore files under `root path` or `include path`
+      // `a/b/c.ts`: specific ignore files
+      let flag = false;
+      if (ignore && ignore.length) {
+        ignore.some(i => {
+          const regRule = (/^\*\./.test(i) && isFirst) || /\*\*\/\*\./.test(i);
+          if ((regRule && fExt && fExt === fileExt(i)) || trimPath(i) === _path) {
+            flag = true;
+            return true;
+          }
+        })
+      }
+
       // collect files according to rules
       let fileInfo = null;
       if (hasInfo) {
         const info = Deno.statSync(_path);
         fileInfo = {
           ...info,
-          fmtSize: fmtFilesize(info.size),
+          fmtSize: fmtFileSize(info.size),
         }
       }
-      collect.push({
+      !flag && collect.push({
         path: _path,
         name: item.name,
-        // https://stackoverflow.com/questions/190852/how-can-i-get-file-extensions-with-javascript
-        ext: item.name.slice((item.name.lastIndexOf('.') - 1 >>> 0) + 2),
+        ext: fExt,
         realPath: Deno.realPathSync(_path),
         info: fileInfo,
       });
@@ -93,20 +84,15 @@ export function getFiles<T extends (string | GetFilesOptions)>(opts: T): FileInf
     const { root, include, exclude, ignore, hasInfo } = (opts as GetFilesOptions);
 
     if (root && include === undefined) {
-      findFile({ path: root, collect: files, exclude, ignore, hasInfo });
+      findFile({ path: root, collect: files, exclude, ignore, hasInfo, isFirst: true });
     }
 
     if (include && include.length === 0) return [];
 
     if (include) {
-      include.forEach(dir => findFile({ path: dir, collect: files, exclude, ignore, hasInfo }))
-    }
-
-    if (ignore && ignore.length) {
-      // TODO:
+      include.forEach(dir => findFile({ path: dir, collect: files, ignore, exclude, hasInfo, isFirst: true }))
     }
   }
-  // console.log(files);
   return files;
 }
 

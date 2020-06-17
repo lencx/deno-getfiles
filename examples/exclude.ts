@@ -7,7 +7,7 @@
 import getFiles from '../mod.ts';
 
 const files = getFiles({
-  dir: '.',
+  root: '.',
   exclude: ['.git'],
   ignore: ['*.ts', '*.md'],
 });
