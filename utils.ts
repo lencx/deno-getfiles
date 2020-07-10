@@ -46,10 +46,4 @@ export const exists = async (filename: string): Promise<boolean> => {
 export const fileExt = (fname: string): string => fname.slice((fname.lastIndexOf('.') - 1 >>> 0) + 2);
 
 // example: './a/b/' => 'a/b'
-export const trimPath = (path: string): string => {
-  // example: './a/b/' => './a/b'
-  if (/\/$/.test(path)) path = path.slice(0, -1);
-  // example: './a/b' => 'a/b'
-  if (/^\.\//.test(path)) path = path.slice(2);
-  return path;
-}
+export const trimPath = (path: string): string => path.replace(/^\.\/|\/$/g, '')
