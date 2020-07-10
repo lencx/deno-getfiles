@@ -40,10 +40,10 @@ export const exists = async (filename: string): Promise<boolean> => {
   } catch (e) {
     return false;
   }
-}
+};
 
 // https://stackoverflow.com/questions/190852/how-can-i-get-file-extensions-with-javascript
 export const fileExt = (fname: string): string => fname.slice((fname.lastIndexOf('.') - 1 >>> 0) + 2);
 
 // example: './a/b/' => 'a/b'
-export const trimPath = (path: string): string => path.replace(/^\.\/|\/$/g, '')
+export const trimPath = (path: string): string => path.replace(/^\.\/|\/$/g, '');
